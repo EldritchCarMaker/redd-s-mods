@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
+using Logger = QModManager.Utility.Logger;
 
 namespace CyclopsCloakingMod_SN
 {
@@ -17,9 +18,10 @@ namespace CyclopsCloakingMod_SN
             [HarmonyPrefix]
             public static bool Prefix(CyclopsNoiseManager __instance, ref float __result)
             {
-                if (QMOD.Variables.isequipped)
+                var cloak = __instance.subRoot.GetComponent<Cloaking>();
+                if (cloak != null && cloak.handler.HasUpgrade)
                 {
-                    Traverse.Create(__instance).Field("noiseScalar").SetValue(0f);
+                    __instance.noiseScalar = 0f;
                     __result = 0f;
                     return false;
                 }
@@ -32,16 +34,18 @@ namespace CyclopsCloakingMod_SN
         [HarmonyPatch("OnPlayerEntered")]
         internal class PatchSubRootOnPlayerEnter
         {
-            [HarmonyPrefix]
-            public static bool Prefix(SubRoot __instance)
+            [HarmonyPostfix]
+            public static void Prefix(SubRoot __instance)
             {
-                if (QMOD.Variables.isequipped && __instance.isCyclops)
+                var cloak = __instance.GetComponent<Cloaking>();
+                if (cloak != null && cloak.handler.HasUpgrade)
                 {
-                    __instance.gameObject.GetComponent<Cloaking>().DeactivateCloak();
-                    return true;
+                    cloak.DeactivateCloak();
+                    return;
                 }
+                else { Logger.Log(Logger.Level.Info, "cloak: " + (cloak != null), null, true); }
 
-                return true;
+                return;
             }
         }
 
@@ -49,16 +53,18 @@ namespace CyclopsCloakingMod_SN
         [HarmonyPatch("OnPlayerExited")]
         internal class PatchSubRootOnPlayerLeave
         {
-            [HarmonyPrefix]
-            public static bool Prefix(SubRoot __instance)
+            [HarmonyPostfix]
+            public static void Prefix(SubRoot __instance)
             {
-                if (QMOD.Variables.isequipped && __instance.isCyclops)
+                var cloak = __instance.GetComponent<Cloaking>();
+                if (cloak != null && cloak.handler.HasUpgrade)
                 {
-                    __instance.gameObject.GetComponent<Cloaking>().ActivateCloak();
-                    return true;
+                    cloak.ActivateCloak();
+                    return;
                 }
+                else { Logger.Log(Logger.Level.Info, "handler: " + (cloak != null), null, true); }
 
-                return true;
+                return;
             }
         }
 
@@ -66,15 +72,19 @@ namespace CyclopsCloakingMod_SN
         [HarmonyPatch("EnterCameraView")]
         internal class CyclopsCameraInputActiveCameraPatch
         {
-            [HarmonyPrefix]
-            public static bool Prefix(CyclopsExternalCams __instance)
+            [HarmonyPostfix]
+            public static void Prefix(CyclopsExternalCams __instance)
             {
-                if (QMOD.Variables.isequipped)
+                var subRoot = __instance.GetComponentInParent<SubRoot>();
+                if (subRoot == null) return;
+                var cloak = subRoot.GetComponent<Cloaking>();
+                if (cloak != null && cloak.handler.HasUpgrade)
                 {
-                   Player.main.currentSub.gameObject.GetComponent<Cloaking>().ActivateCloak();
+                    cloak.ActivateCloak();
                 }
+                else { Logger.Log(Logger.Level.Info, "handler: " + (cloak != null), null, true); }
 
-                return true;
+                return;
             }
 
         }
@@ -83,14 +93,18 @@ namespace CyclopsCloakingMod_SN
         [HarmonyPatch("ExitCamera")]
         internal class CyclopsCameraInputDeactivateCameraPatch
         {
-            [HarmonyPrefix]
-            public static bool Prefix(CyclopsExternalCams __instance)
+            [HarmonyPostfix]
+            public static void Prefix(CyclopsExternalCams __instance)
             {
-                if (QMOD.Variables.isequipped)
+                var subRoot = __instance.GetComponentInParent<SubRoot>();
+                if (subRoot == null) return;
+                var cloak = subRoot.GetComponent<Cloaking>();
+                if (cloak != null && cloak.handler.HasUpgrade)
                 {
-                   Player.main.currentSub.gameObject.GetComponent<Cloaking>().DeactivateCloak();
+                    cloak.DeactivateCloak();
                 }
-                return true;
+                else { Logger.Log(Logger.Level.Info, "handler: " + (cloak != null), null, true); }
+                return;
             }
         }
     }
