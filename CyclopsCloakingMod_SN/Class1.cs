@@ -9,7 +9,6 @@ using System.IO;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
 using MoreCyclopsUpgrades.API.Upgrades;
-using QModManager.API.ModLoading;
 using System.Reflection;
 using MoreCyclopsUpgrades.API;
 using RadicalLibrary;
@@ -72,9 +71,6 @@ namespace CyclopsCloakingMod_SN
     {
         public static class Variables
         {
-            public static bool isequipped;
-            public static SubRoot cyclops;
-            public static Dictionary<GameObject, Material[]> oldcyclopsstuff = new Dictionary<GameObject, Material[]>();
             public static Material StealthEffect;
         }   
         [QModPatch]
@@ -84,12 +80,10 @@ namespace CyclopsCloakingMod_SN
             QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Patching redd_CyclopsCloakingModule_SN");
             Harmony harmony = new Harmony("redd_CyclopsCloakingModule_SN");
             harmony.PatchAll(assembly);
-            QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Patched Successfully!");
             var item = new CyclopsCloakingModule();
             item.Patch();
             MoreCyclopsUpgrades.API.MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                Variables.cyclops = cyclops;
                 var bundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(assembly.Location),
                     "cyclopscloakingmod.shaders"));
                 var StealthEffect = bundle.LoadAsset<Material>("Cloak_Material_mtl");
@@ -105,35 +99,20 @@ namespace CyclopsCloakingMod_SN
                 StealthEffect.shader = StealthEffectShader;
                 bundle.Unload(false);
                 Variables.StealthEffect = StealthEffect;
-                return new UpgradeHandler(item.TechType, cyclops)
+                return new CloakUpgradeHandler(item.TechType, cyclops)
                 {
                     OnClearUpgrades = () =>
                     {
-                        if (Variables.isequipped)
-                        {
-                            Variables.isequipped = false;
-                        }
-
-                        var cloakingcomponent = cyclops.gameObject.GetComponent<Cloaking>();
-                        if (cloakingcomponent != null)
-                        {
-                            cloakingcomponent.DestroySelf();
-                        }
-                        QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Not cloaking", null, true);
                         cyclops.noiseManager.RecalculateNoiseValues();
                     },
                     OnUpgradeCounted = () =>
                     {
-                        if (!Variables.isequipped)
-                        {
-                            Variables.isequipped = true;
-                        }
-                        cyclops.gameObject.EnsureComponent<Cloaking>();
-                        QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Cloaking", null, true);
                         cyclops.noiseManager.RecalculateNoiseValues();
                     }
                 };
             });
+
+            QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Patched Successfully!");
         }
     }
 }

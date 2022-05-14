@@ -9,33 +9,31 @@ namespace CyclopsCloakingMod_SN
     {
         public bool isCloaked = false;
         private Dictionary<GameObject, Material[]> oldcyclopsstuff = new Dictionary<GameObject, Material[]>();
-        private SubRoot cyclops;
+        public SubRoot cyclops;
+        public CloakUpgradeHandler handler;
+
         private void Awake()
         {
             cyclops = GetComponent<SubRoot>();
-            foreach (Renderer objectRenderer in GetComponentsInChildren<Renderer>())
-            { 
-                oldcyclopsstuff.Add(objectRenderer.gameObject,objectRenderer.materials);
+            foreach (Renderer objectRenderer in cyclops.GetComponentsInChildren<Renderer>())
+            {
+                oldcyclopsstuff.Add(objectRenderer.gameObject, objectRenderer.materials);
             }
-            
-        }
 
+        }
         public void ActivateCloak()
         {
-            QMOD.Variables.oldcyclopsstuff.Clear();
-            Parallel.ForEach(cyclops.GetComponentsInChildren<Renderer>(), objrender =>
+            foreach (Renderer objectRenderer in cyclops.GetComponentsInChildren<Renderer>())
             {
-                if (!oldcyclopsstuff.ContainsKey(objrender.gameObject))
+                if (!oldcyclopsstuff.ContainsKey(objectRenderer.gameObject))
                 {
-                    oldcyclopsstuff.Add(objrender.gameObject, objrender.materials);
+                    oldcyclopsstuff.Add(objectRenderer.gameObject, objectRenderer.materials);
                 }
                 else
                 {
-                    oldcyclopsstuff[objrender.gameObject] = objrender.materials;
+                    oldcyclopsstuff[objectRenderer.gameObject] = objectRenderer.materials;
                 }
-            });
-            foreach(Renderer objectRenderer in cyclops.GetComponentsInChildren<Renderer>())
-            {
+
                 if (objectRenderer.gameObject.layer != 1 << LayerMask.NameToLayer("BaseClipProxy"))
                 {
                     var mats = objectRenderer.materials;
@@ -50,13 +48,12 @@ namespace CyclopsCloakingMod_SN
 
             isCloaked = true;
         }
-
         public void DeactivateCloak()
         {
             foreach (Renderer objectRenderer in cyclops.GetComponentsInChildren<Renderer>())
             {
 
-                foreach (KeyValuePair<GameObject,Material[]> kvp in oldcyclopsstuff)
+                foreach (KeyValuePair<GameObject, Material[]> kvp in oldcyclopsstuff)
                 {
                     if (kvp.Key.GetInstanceID() == objectRenderer.gameObject.GetInstanceID())
                     {
@@ -66,12 +63,7 @@ namespace CyclopsCloakingMod_SN
             }
 
             isCloaked = false;
-            
-        }
 
-        public void DestroySelf()
-        {
-            Destroy(GetComponent<Cloaking>());
         }
     }
 }
