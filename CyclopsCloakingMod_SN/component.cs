@@ -41,13 +41,12 @@ namespace CyclopsCloakingMod_SN
         public bool ShouldCloak => (!PlayerInSub || !PlayerCamNormal) && handler != null && handler.HasUpgrade;
         public bool PlayerCamNormal => SNCameraRoot.main.transform.localPosition == Vector3.zero && SNCameraRoot.main.transform.parent == CameraParent;
         public bool PlayerInSub => Player.main.currentSub == cyclops;
-
         private void Awake()
         {
             cyclops = GetComponent<SubRoot>();
-            foreach (Renderer objectRenderer in GetComponentsInChildren<Renderer>())
-            { 
-                oldcyclopsstuff.Add(objectRenderer.gameObject,objectRenderer.materials);
+            foreach (Renderer objectRenderer in cyclops.GetComponentsInChildren<Renderer>())
+            {
+                oldcyclopsstuff.Add(objectRenderer.gameObject, objectRenderer.materials);
             }
 
             if(!CameraParent)
@@ -72,6 +71,7 @@ namespace CyclopsCloakingMod_SN
             ActivateCloak();
         }
 
+        }
         public void ActivateCloak()
         {
             if (isCloaked) return;
@@ -192,7 +192,6 @@ namespace CyclopsCloakingMod_SN
 
             return false;
         }
-
         public void DeactivateCloak()
         {
             if (!isCloaked) return;

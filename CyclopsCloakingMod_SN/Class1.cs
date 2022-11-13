@@ -9,7 +9,6 @@ using System.IO;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
 using MoreCyclopsUpgrades.API.Upgrades;
-using QModManager.API.ModLoading;
 using System.Reflection;
 using MoreCyclopsUpgrades.API;
 using RadicalLibrary;
@@ -81,7 +80,6 @@ namespace CyclopsCloakingMod_SN
             QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Patching redd_CyclopsCloakingModule_SN");
             Harmony harmony = new Harmony("redd_CyclopsCloakingModule_SN");
             harmony.PatchAll(assembly);
-            QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Patched Successfully!");
             var item = new CyclopsCloakingModule();
             item.Patch(); 
             
@@ -107,6 +105,8 @@ namespace CyclopsCloakingMod_SN
             {
                 return new CloakUpgradeHandler(item.TechType, cyclops);
             });
+
+            QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Patched Successfully!");
         }
     }
 }
