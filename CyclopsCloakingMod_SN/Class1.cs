@@ -72,9 +72,6 @@ namespace CyclopsCloakingMod_SN
     {
         public static class Variables
         {
-            public static bool isequipped;
-            public static SubRoot cyclops;
-            public static Dictionary<GameObject, Material[]> oldcyclopsstuff = new Dictionary<GameObject, Material[]>();
             public static Material StealthEffect;
         }   
         [QModPatch]
@@ -86,53 +83,29 @@ namespace CyclopsCloakingMod_SN
             harmony.PatchAll(assembly);
             QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Patched Successfully!");
             var item = new CyclopsCloakingModule();
-            item.Patch();
+            item.Patch(); 
+            
+
+            var bundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(assembly.Location),
+                    "cyclopscloakingmod.shaders"));
+            var StealthEffect = bundle.LoadAsset<Material>("Cloak_Material_mtl");
+            if (StealthEffect == null)
+            {
+                QModManager.Utility.Logger.Log(Logger.Level.Error, "StealthEffect null");
+            }
+            var StealthEffectShader = bundle.LoadAsset<Shader>("Invisibility");
+            if (StealthEffectShader == null)
+            {
+                QModManager.Utility.Logger.Log(Logger.Level.Error, "StealthEffectShader null");
+            }
+            StealthEffect.shader = StealthEffectShader;
+            bundle.Unload(false);
+            Variables.StealthEffect = StealthEffect;
+
+
             MoreCyclopsUpgrades.API.MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                Variables.cyclops = cyclops;
-                var bundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(assembly.Location),
-                    "cyclopscloakingmod.shaders"));
-                var StealthEffect = bundle.LoadAsset<Material>("Cloak_Material_mtl");
-                if (StealthEffect == null)
-                {
-                    QModManager.Utility.Logger.Log(Logger.Level.Error,"StealthEffect null");
-                }
-                var StealthEffectShader = bundle.LoadAsset<Shader>("Invisibility");
-                if (StealthEffectShader == null)
-                {
-                    QModManager.Utility.Logger.Log(Logger.Level.Error,"StealthEffectShader null");
-                }
-                StealthEffect.shader = StealthEffectShader;
-                bundle.Unload(false);
-                Variables.StealthEffect = StealthEffect;
-                return new UpgradeHandler(item.TechType, cyclops)
-                {
-                    OnClearUpgrades = () =>
-                    {
-                        if (Variables.isequipped)
-                        {
-                            Variables.isequipped = false;
-                        }
-
-                        var cloakingcomponent = cyclops.gameObject.GetComponent<Cloaking>();
-                        if (cloakingcomponent != null)
-                        {
-                            cloakingcomponent.DestroySelf();
-                        }
-                        QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Not cloaking", null, true);
-                        cyclops.noiseManager.RecalculateNoiseValues();
-                    },
-                    OnUpgradeCounted = () =>
-                    {
-                        if (!Variables.isequipped)
-                        {
-                            Variables.isequipped = true;
-                        }
-                        cyclops.gameObject.EnsureComponent<Cloaking>();
-                        QModManager.Utility.Logger.Log(QModManager.Utility.Logger.Level.Info, "Cloaking", null, true);
-                        cyclops.noiseManager.RecalculateNoiseValues();
-                    }
-                };
+                return new CloakUpgradeHandler(item.TechType, cyclops);
             });
         }
     }

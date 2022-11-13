@@ -14,9 +14,7 @@ namespace CyclopsCloakingMod_SN
 
         public bool isCloaked = false;
         private Dictionary<GameObject, Material[]> oldcyclopsstuff = new Dictionary<GameObject, Material[]>();
-<<<<<<< Updated upstream
-        private SubRoot cyclops;
-=======
+
         private Dictionary<GameObject, Material[]> playerMaterials = new Dictionary<GameObject, Material[]>();
 
         public static List<string> autoFilterObjectNames = new List<string>()//filters the specific object with this string in its name
@@ -44,7 +42,6 @@ namespace CyclopsCloakingMod_SN
         public bool PlayerCamNormal => SNCameraRoot.main.transform.localPosition == Vector3.zero && SNCameraRoot.main.transform.parent == CameraParent;
         public bool PlayerInSub => Player.main.currentSub == cyclops;
 
->>>>>>> Stashed changes
         private void Awake()
         {
             cyclops = GetComponent<SubRoot>();
@@ -52,9 +49,7 @@ namespace CyclopsCloakingMod_SN
             { 
                 oldcyclopsstuff.Add(objectRenderer.gameObject,objectRenderer.materials);
             }
-<<<<<<< Updated upstream
-            
-=======
+
             if(!CameraParent)
                 CameraParent = SNCameraRoot.main.transform.parent;
         }
@@ -75,19 +70,10 @@ namespace CyclopsCloakingMod_SN
         {
             yield return new WaitForFixedUpdate();
             ActivateCloak();
->>>>>>> Stashed changes
         }
 
         public void ActivateCloak()
         {
-<<<<<<< Updated upstream
-            QMOD.Variables.oldcyclopsstuff.Clear();
-            Parallel.ForEach(cyclops.GetComponentsInChildren<Renderer>(), objrender =>
-            {
-                if (!oldcyclopsstuff.ContainsKey(objrender.gameObject))
-                {
-                    oldcyclopsstuff.Add(objrender.gameObject, objrender.materials);
-=======
             if (isCloaked) return;
 
 
@@ -125,7 +111,6 @@ namespace CyclopsCloakingMod_SN
                 if (transform.childCount > 0)
                 {
                     SetObjectsRecursive(transform, cloaked, depth + 1);
->>>>>>> Stashed changes
                 }
             }
         }
@@ -135,14 +120,6 @@ namespace CyclopsCloakingMod_SN
             {
                 if (obj.name.ToLower().Contains(name.ToLower()))
                 {
-<<<<<<< Updated upstream
-                    oldcyclopsstuff[objrender.gameObject] = objrender.materials;
-                }
-            });
-            foreach(Renderer objectRenderer in cyclops.GetComponentsInChildren<Renderer>())
-            {
-                if (objectRenderer.gameObject.layer != 1 << LayerMask.NameToLayer("BaseClipProxy"))
-=======
                     obj.gameObject.SetActive(false);
                     break;
                 }
@@ -169,7 +146,6 @@ namespace CyclopsCloakingMod_SN
             {
                 var mats = objectRenderer.materials;
                 for (int i = 0; i < mats.Length; i++)
->>>>>>> Stashed changes
                 {
                     mats[i] = QMOD.Variables.StealthEffect;
                 }
@@ -247,12 +223,8 @@ namespace CyclopsCloakingMod_SN
                 else
                     playerMaterials.Add(renderer.gameObject, renderer.materials);
 
-<<<<<<< Updated upstream
-                foreach (KeyValuePair<GameObject,Material[]> kvp in oldcyclopsstuff)
-=======
                 var mats = renderer.materials;
                 for (int i = 0; i < mats.Length; i++)
->>>>>>> Stashed changes
                 {
                     mats[i] = QMOD.Variables.StealthEffect;
                 }
@@ -264,15 +236,6 @@ namespace CyclopsCloakingMod_SN
         {
             var bodyTransform = Player.main.transform.Find("body");
 
-<<<<<<< Updated upstream
-            isCloaked = false;
-            
-        }
-
-        public void DestroySelf()
-        {
-            Destroy(GetComponent<Cloaking>());
-=======
             if (bodyTransform == null)
             {
                 Logger.Log(Logger.Level.Warn, "Could not find player body");
@@ -291,7 +254,6 @@ namespace CyclopsCloakingMod_SN
                     Logger.Log(Logger.Level.Warn, $"Found renderer on player without a corresponding entry in dictionary");
                 }
             }
->>>>>>> Stashed changes
         }
     }
 }

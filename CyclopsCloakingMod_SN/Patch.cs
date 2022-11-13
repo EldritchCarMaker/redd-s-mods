@@ -5,11 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
-<<<<<<< Updated upstream
-=======
 using UWE;
 using Logger = QModManager.Utility.Logger;
->>>>>>> Stashed changes
 
 namespace CyclopsCloakingMod_SN
 {
@@ -22,9 +19,9 @@ namespace CyclopsCloakingMod_SN
             [HarmonyPrefix]
             public static bool Prefix(CyclopsNoiseManager __instance, ref float __result)
             {
-                if (QMOD.Variables.isequipped)
+                if (__instance.subRoot.GetComponent<Cloaking>().handler.HasUpgrade)
                 {
-                    Traverse.Create(__instance).Field("noiseScalar").SetValue(0f);
+                    __instance.noiseScalar = 0;
                     __result = 0f;
                     return false;
                 }
