@@ -5,13 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
+<<<<<<< Updated upstream
+=======
+using UWE;
+using Logger = QModManager.Utility.Logger;
+>>>>>>> Stashed changes
 
 namespace CyclopsCloakingMod_SN
 {
     class Patch
     {
         [HarmonyPatch(typeof(CyclopsNoiseManager))]
-        [HarmonyPatch("RecalculateNoiseValues")]
+        [HarmonyPatch(nameof(CyclopsNoiseManager.RecalculateNoiseValues))]
         internal class PatchCyclopsNoiseManagerRecalculateNoise
         {
             [HarmonyPrefix]
@@ -27,9 +32,9 @@ namespace CyclopsCloakingMod_SN
                 return true;
             }
         }
-
+        /*
         [HarmonyPatch(typeof(SubRoot))]
-        [HarmonyPatch("OnPlayerEntered")]
+        [HarmonyPatch(nameof(SubRoot.OnPlayerEntered))]
         internal class PatchSubRootOnPlayerEnter
         {
             [HarmonyPrefix]
@@ -37,16 +42,21 @@ namespace CyclopsCloakingMod_SN
             {
                 if (QMOD.Variables.isequipped && __instance.isCyclops)
                 {
+<<<<<<< Updated upstream
                     __instance.gameObject.GetComponent<Cloaking>().DeactivateCloak();
                     return true;
                 }
 
                 return true;
+=======
+                    cloak.DeactivateCloak();
+                }
+>>>>>>> Stashed changes
             }
         }
 
         [HarmonyPatch(typeof(SubRoot))]
-        [HarmonyPatch("OnPlayerExited")]
+        [HarmonyPatch(nameof(SubRoot.OnPlayerExited))]
         internal class PatchSubRootOnPlayerLeave
         {
             [HarmonyPrefix]
@@ -54,16 +64,21 @@ namespace CyclopsCloakingMod_SN
             {
                 if (QMOD.Variables.isequipped && __instance.isCyclops)
                 {
+<<<<<<< Updated upstream
                     __instance.gameObject.GetComponent<Cloaking>().ActivateCloak();
                     return true;
                 }
 
                 return true;
+=======
+                    CoroutineHost.StartCoroutine(cloak.ActivateTimedCloak());
+                }
+>>>>>>> Stashed changes
             }
         }
 
         [HarmonyPatch(typeof(CyclopsExternalCams))]
-        [HarmonyPatch("EnterCameraView")]
+        [HarmonyPatch(nameof(CyclopsExternalCams.EnterCameraView))]
         internal class CyclopsCameraInputActiveCameraPatch
         {
             [HarmonyPrefix]
@@ -73,14 +88,17 @@ namespace CyclopsCloakingMod_SN
                 {
                    Player.main.currentSub.gameObject.GetComponent<Cloaking>().ActivateCloak();
                 }
+<<<<<<< Updated upstream
 
                 return true;
+=======
+>>>>>>> Stashed changes
             }
 
         }
 
         [HarmonyPatch(typeof(CyclopsExternalCams))]
-        [HarmonyPatch("ExitCamera")]
+        [HarmonyPatch(nameof(CyclopsExternalCams.ExitCamera))]
         internal class CyclopsCameraInputDeactivateCameraPatch
         {
             [HarmonyPrefix]
@@ -90,8 +108,12 @@ namespace CyclopsCloakingMod_SN
                 {
                    Player.main.currentSub.gameObject.GetComponent<Cloaking>().DeactivateCloak();
                 }
+<<<<<<< Updated upstream
                 return true;
+=======
+>>>>>>> Stashed changes
             }
         }
+        */
     }
 }
